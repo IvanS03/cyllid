@@ -1,0 +1,137 @@
+// src/i18n/en.ts
+import { TranslationKeys } from './es';
+
+const en: TranslationKeys = {
+  common: {
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    close: 'Close',
+    confirm: 'Confirm',
+    back: 'Back',
+    loading: 'Loading...',
+    error: 'Something went wrong',
+    success: 'Done!',
+    optional: 'optional',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    total: 'Total',
+    of: 'of',
+    yes: 'Yes',
+    no: 'No',
+    ok: 'OK',
+  },
+
+  tabs: {
+    home: 'Home',
+    stats: 'Stats',
+    settings: 'Settings',
+  },
+
+  home: {
+    greeting_morning: 'Good morning! 👋',
+    greeting_afternoon: 'Good afternoon! 👋',
+    greeting_evening: 'Good evening! 👋',
+    monthly_summary: 'Monthly summary',
+    spent_this_month: 'Spent this month',
+    expenses_count_one: '{count} expense',
+    expenses_count_other: '{count} expenses',
+    recent_expenses: 'Recent expenses',
+    no_expenses: 'No expenses yet',
+    no_expenses_sub: 'Tap the button to log your first expense',
+    add_expense: 'Add expense',
+    see_all: 'See all',
+  },
+
+  addExpense: {
+    title: 'New expense',
+    amount_placeholder: '0.00',
+    amount_label: 'Amount',
+    category_label: 'Category',
+    note_label: 'Note',
+    note_placeholder: 'What did you spend on?',
+    date_label: 'Date',
+    save_button: 'Save expense',
+    invalid_amount: 'Enter a valid amount greater than 0',
+    success: 'Expense saved!',
+  },
+
+  editExpense: {
+    title: 'Edit expense',
+    save_button: 'Save changes',
+    delete_confirm_title: 'Delete this expense?',
+    delete_confirm_message: 'This action cannot be undone.',
+    delete_button: 'Yes, delete',
+    success_edit: 'Expense updated',
+    success_delete: 'Expense deleted',
+  },
+
+  categories: {
+    food: 'Food',
+    transport: 'Transport',
+    leisure: 'Leisure',
+    health: 'Health',
+    shopping: 'Shopping',
+    other: 'Other',
+  },
+
+  stats: {
+    title: 'Statistics',
+    this_month: 'This month',
+    by_category: 'By category',
+    monthly_trend: 'Monthly trend',
+    no_data: 'No data this month',
+    no_data_sub: 'Add expenses to see your statistics',
+    biggest_expense: 'Biggest expense',
+    daily_average: 'Daily average',
+    most_used_category: 'Top category',
+    total_expenses: 'Total expenses',
+  },
+
+  settings: {
+    title: 'Settings',
+    appearance: 'Appearance',
+    theme: 'Theme',
+    theme_light: 'Light',
+    theme_dark: 'Dark',
+    theme_system: 'System',
+    language: 'Language',
+    language_es: 'Español',
+    language_en: 'English',
+    currency: 'Currency',
+    premium: 'Premium',
+    premium_title: 'Premium Version',
+    premium_desc: 'No ads and advanced features',
+    premium_button: 'Get Premium',
+    about: 'About',
+    version: 'Version',
+    data: 'My data',
+    export: 'Export data',
+    clear_data: 'Delete all data',
+    clear_confirm_title: 'Delete all data?',
+    clear_confirm_message: 'This action cannot be undone.',
+    clear_success: 'Data deleted',
+  },
+
+  filters: {
+    title: 'Filter expenses',
+    showing: 'Showing',
+    all_time: 'All time',
+    this_week: 'This week',
+    this_month: 'This month',
+    last_month: 'Last month',
+    custom: 'Custom',
+    from: 'From',
+    to: 'To',
+    apply: 'Apply filter',
+    clear: 'Clear filter',
+  },
+
+  ads: {
+    banner_label: 'Advertisement',
+    remove_ads: 'Remove ads',
+  },
+};
+
+export default en;
