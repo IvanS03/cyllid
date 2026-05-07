@@ -1,50 +1,98 @@
-# Welcome to your Expo app 👋
+# 💸 Cyllid — React Native + Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App de control de gastos personales. Offline-first, minimalista, bilingüe.
 
-## Get started
+## Stack
+- **Expo SDK 51** + Expo Router (file-based routing)
+- **Zustand** — estado global
+- **AsyncStorage** — persistencia offline
+- **Reanimated 3** — animaciones suaves
+- **date-fns** — manejo de fechas (ES/EN)
+- **Nunito** — tipografía (Google Fonts)
 
-1. Install dependencies
+## Estructura de archivos (35 archivos)
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+gastos-app/
+├── app/
+│   ├── _layout.tsx              ✅ Root layout + fuentes + stores
+│   ├── add.tsx                  ✅ Modal agregar gasto (<3 seg)
+│   ├── edit/[id].tsx            ✅ Editar / eliminar gasto
+│   └── (tabs)/
+│       ├── _layout.tsx          ✅ Tab bar animada + haptics
+│       ├── index.tsx            ✅ Home: resumen + lista agrupada
+│       ├── stats.tsx            ✅ Estadísticas: barras + burbujas
+│       └── settings.tsx         ✅ Ajustes: tema + idioma + moneda
+│
+├── src/
+│   ├── i18n/
+│   │   ├── es.ts                ✅ ~80 claves en español
+│   │   ├── en.ts                ✅ Traducción completa al inglés
+│   │   ├── index.ts             ✅ Motor i18n: t(), tp(), store
+│   │   └── useTranslation.ts    ✅ Hook principal
+│   ├── theme/
+│   │   ├── index.ts             ✅ Colores, spacing, shadows, CATEGORY_CONFIG
+│   │   └── useTheme.ts          ✅ Hook modo oscuro/claro
+│   ├── store/
+│   │   ├── useExpenseStore.ts   ✅ CRUD + selectores (Zustand)
+│   │   └── useAppStore.ts       ✅ Tema, moneda, premium
+│   ├── types/index.ts           ✅ Tipos TypeScript globales
+│   ├── utils/
+│   │   ├── storage.ts           ✅ AsyncStorage abstraction
+│   │   ├── helpers.ts           ✅ Formateo, fechas, agrupación
+│   │   └── ads.ts               ✅ Estructura AdMob lista
+│   └── components/
+│       ├── ui/
+│       │   ├── Text.tsx         ✅ 9 variantes tipográficas
+│       │   ├── Button.tsx       ✅ 5 variantes + haptics
+│       │   ├── Card.tsx         ✅ Contenedor con sombra
+│       │   └── AmountInput.tsx  ✅ Input gigante con autoFocus
+│       ├── CategoryPicker.tsx   ✅ Scroll horizontal animado
+│       ├── ExpenseItem.tsx      ✅ Fila con FadeInRight escalonado
+│       ├── MonthSummaryCard.tsx ✅ Hero card con gradiente
+│       ├── FAB.tsx              ✅ Botón flotante con pulso
+│       ├── BannerAd.tsx         ✅ Placeholder AdMob
+│       ├── LanguageSwitcher.tsx ✅ Toggle ES/EN animado
+│       ├── EmptyState.tsx       ✅ Emoji flotante animado
+│       └── index.ts             ✅ Barrel exports
+│
+├── package.json
+├── app.json
+└── babel.config.js
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Instalación y uso
 
-## Learn more
+```bash
+# 1. Instalar dependencias
+npm install
 
-To learn more about developing your project with Expo, look at the following resources:
+# 2. Iniciar Expo
+npx expo start
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# 3. Abrir en dispositivo (escanea el QR con Expo Go)
+#    o presiona 'a' para Android, 'i' para iOS
+```
 
-## Join the community
+## Funcionalidades MVP ✅
 
-Join our community of developers creating universal apps.
+| Funcionalidad | Estado |
+|---|---|
+| Registrar gasto en <3 seg | ✅ |
+| Monto + categoría + nota | ✅ |
+| Guardado offline (AsyncStorage) | ✅ |
+| Lista de gastos recientes | ✅ |
+| Resumen mensual | ✅ |
+| Editar / eliminar gastos | ✅ |
+| Español / Inglés (i18n) | ✅ |
+| Modo oscuro / claro / sistema | ✅ |
+| Estadísticas por categoría | ✅ |
+| Estructura AdMob lista | ✅ |
+| Base versión Premium | ✅ |
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Color principal: `#7119c3`
+
+## Monetización
+- **Gratis**: Banner AdMob (placeholder listo — ver `src/utils/ads.ts`)
+- **Premium**: Sin anuncios. Activar con `useAppStore().setPremium(true)`
+- Para in-app purchase real: integrar `expo-in-app-purchases`
