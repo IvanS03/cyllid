@@ -116,7 +116,6 @@ const en: TranslationKeys = {
 
   filters: {
     title: 'Filter expenses',
-    showing: 'Showing',
     all_time: 'All time',
     this_week: 'This week',
     this_month: 'This month',
@@ -126,11 +125,51 @@ const en: TranslationKeys = {
     to: 'To',
     apply: 'Apply filter',
     clear: 'Clear filter',
+    showing: 'Showing',
   },
 
   ads: {
     banner_label: 'Advertisement',
     remove_ads: 'Remove ads',
+  },
+
+  // ── Income ─────────────────────────────────
+  income: {
+    title: 'Income',
+    add_income: 'Add income',
+    recent_incomes: 'Recent income',
+    no_incomes: 'No income yet',
+    no_incomes_sub: 'Record your income to see your balance',
+    source_label: 'Source',
+    recurrent_label: 'Repeats every month?',
+    recurrent_hint: 'Recurring income',
+    total_income: 'Total income',
+    save_button: 'Save income',
+    edit_title: 'Edit income',
+    delete_confirm_title: 'Delete this income?',
+    delete_confirm_message: 'This action cannot be undone.',
+    delete_button: 'Yes, delete',
+    success: 'Income saved!',
+  },
+
+  sources: {
+    salary: 'Salary',
+    freelance: 'Freelance',
+    business: 'Business',
+    investment: 'Investment',
+    gift: 'Gift',
+    other: 'Other',
+  },
+
+  balance: {
+    title: 'Balance',
+    income_vs_expenses: 'Income vs Expenses',
+    available: 'Available',
+    positive: 'Surplus',
+    negative: 'Deficit',
+    neutral: 'Balanced',
+    this_month: 'This month',
+    savings_rate: 'Savings rate',
   },
 };
 

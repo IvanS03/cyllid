@@ -101,6 +101,55 @@ export const CATEGORY_CONFIG = {
 
 export type CategoryKey = keyof typeof CATEGORY_CONFIG;
 
+// ── Configuración de fuentes de ingreso ───
+
+export const INCOME_SOURCE_CONFIG = {
+  salary: {
+    label: 'Salario',
+    icon: 'briefcase',       // nombre del icono Lucide
+    color: '#10B981',         // verde esmeralda
+    bgColor: '#ECFDF5',
+    darkBgColor: '#052e1a',
+  },
+  freelance: {
+    label: 'Freelance',
+    icon: 'laptop',
+    color: '#6366F1',         // índigo
+    bgColor: '#EEF2FF',
+    darkBgColor: '#1e1b4b',
+  },
+  business: {
+    label: 'Negocio',
+    icon: 'building-2',
+    color: '#F59E0B',         // ámbar
+    bgColor: '#FFFBEB',
+    darkBgColor: '#2d1f00',
+  },
+  investment: {
+    label: 'Inversión',
+    icon: 'trending-up',
+    color: '#3B82F6',         // azul
+    bgColor: '#EFF6FF',
+    darkBgColor: '#0f1f4a',
+  },
+  gift: {
+    label: 'Regalo',
+    icon: 'gift',
+    color: '#EC4899',         // rosa
+    bgColor: '#FDF2F8',
+    darkBgColor: '#3b0a26',
+  },
+  other: {
+    label: 'Otro',
+    icon: 'circle-dot',
+    color: '#6B7280',         // gris
+    bgColor: '#F9FAFB',
+    darkBgColor: '#1f2937',
+  },
+} as const;
+
+export type IncomeSourceKey = keyof typeof INCOME_SOURCE_CONFIG;
+
 export const SPACING = {
   xs: 4,
   sm: 8,

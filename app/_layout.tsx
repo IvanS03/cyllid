@@ -17,6 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useI18nStore } from '../src/i18n';
 import { AppState, useAppStore } from '../src/store/useAppStore';
 import { ExpenseState, useExpenseStore } from '../src/store/useExpenseStore';
+import { IncomeState, useIncomeStore } from '../src/store/useIncomeStore';
 import { useTheme } from '../src/theme/useTheme';
 
 // ── Expo Router: declara la ruta inicial del Stack ──
@@ -45,20 +46,15 @@ function AppContent() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="add"
-          options={{
-            headerShown: false,
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
         />
-        {/* edit/[id] usa el nombre de segmento de Expo Router v3 */}
+        <Stack.Screen
+          name="add-income"
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
         <Stack.Screen
           name="edit/[id]"
-          options={{
-            headerShown: false,
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
         />
       </Stack>
     </View>
@@ -69,6 +65,7 @@ export default function RootLayout() {
   const initialize = useExpenseStore((s: ExpenseState) => s.initialize);
   const initializeSettings = useAppStore((s: AppState) => s.initializeSettings);
   const initLanguage = useI18nStore((s) => s.initLanguage);
+  const initializeIncome = useIncomeStore((s: IncomeState) => s.initialize);
 
   const [fontsLoaded, fontError] = useFonts({
     Nunito_400Regular,
@@ -79,7 +76,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    Promise.all([initialize(), initializeSettings(), initLanguage()]);
+    Promise.all([initialize(), initializeSettings(), initLanguage(), initializeIncome()]);
   }, []);
 
   useEffect(() => {

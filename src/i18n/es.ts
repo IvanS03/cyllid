@@ -114,9 +114,8 @@ const es = {
 
   filters: {
     title: 'Filtrar gastos',
-    showing: 'Mostrando',
     all_time: 'Todo',
-    this_week: 'Esta Semana',
+    this_week: 'Esta semana',
     this_month: 'Este mes',
     last_month: 'Mes pasado',
     custom: 'Personalizado',
@@ -124,11 +123,51 @@ const es = {
     to: 'Hasta',
     apply: 'Aplicar filtro',
     clear: 'Limpiar filtro',
+    showing: 'Mostrando',
   },
 
   ads: {
     banner_label: 'Anuncio',
     remove_ads: 'Quitar anuncios',
+  },
+
+  // ── Ingresos ───────────────────────────────
+  income: {
+    title: 'Ingresos',
+    add_income: 'Agregar ingreso',
+    recent_incomes: 'Ingresos recientes',
+    no_incomes: 'Sin ingresos aún',
+    no_incomes_sub: 'Registra tus ingresos para ver tu balance',
+    source_label: 'Fuente',
+    recurrent_label: '¿Se repite cada mes?',
+    recurrent_hint: 'Ingreso recurrente',
+    total_income: 'Total ingresos',
+    save_button: 'Guardar ingreso',
+    edit_title: 'Editar ingreso',
+    delete_confirm_title: '¿Eliminar este ingreso?',
+    delete_confirm_message: 'Esta acción no se puede deshacer.',
+    delete_button: 'Sí, eliminar',
+    success: '¡Ingreso guardado!',
+  },
+
+  sources: {
+    salary: 'Salario',
+    freelance: 'Freelance',
+    business: 'Negocio',
+    investment: 'Inversión',
+    gift: 'Regalo',
+    other: 'Otro',
+  },
+
+  balance: {
+    title: 'Balance',
+    income_vs_expenses: 'Ingresos vs Gastos',
+    available: 'Disponible',
+    positive: 'Superávit',
+    negative: 'Déficit',
+    neutral: 'Equilibrado',
+    this_month: 'Este mes',
+    savings_rate: 'Tasa de ahorro',
   },
 };
 
