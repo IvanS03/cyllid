@@ -48,14 +48,12 @@ function AppContent() {
           name="add"
           options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
         />
-        <Stack.Screen
-          name="add-income"
-          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen
-          name="edit/[id]"
-          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
+        <Stack.Screen name="add-income"
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="edit/[id]"
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="edit-income/[id]"
+          options={{ headerShown: false, presentation: 'modal', animation: 'slide_from_bottom' }} />
       </Stack>
     </View>
   );
