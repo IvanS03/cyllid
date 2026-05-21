@@ -1,12 +1,14 @@
 // src/components/ui/Card.tsx
 // ─────────────────────────────────────────
 // Contenedor tipo tarjeta con sombra y tema
+// Centrado y con ancho máximo en tablet
 // ─────────────────────────────────────────
 
 import React from 'react';
-import { View, ViewProps, StyleSheet, ViewStyle } from 'react-native';
+import { View, ViewProps, ViewStyle } from 'react-native';
+import { RADIUS, SHADOWS, SPACING } from '../../theme';
 import { useTheme } from '../../theme/useTheme';
-import { RADIUS, SPACING, SHADOWS } from '../../theme';
+import { CONTENT_MAX_W, isTablet } from '../../utils/responsive';
 
 type CardVariant = 'default' | 'elevated' | 'flat' | 'primary';
 
@@ -34,17 +36,8 @@ export function Card({
 }: CardProps) {
   const { colors } = useTheme();
 
-  const bg =
-    variant === 'primary'
-      ? colors.primarySurface
-      : colors.surface;
-
-  const shadow =
-    variant === 'elevated'
-      ? SHADOWS.md
-      : variant === 'flat'
-      ? {}
-      : SHADOWS.sm;
+  const bg = variant === 'primary' ? colors.primarySurface : colors.surface;
+  const shadow = variant === 'elevated' ? SHADOWS.md : variant === 'flat' ? {} : SHADOWS.sm;
 
   const paddingValue =
     typeof padding === 'number'
@@ -60,6 +53,12 @@ export function Card({
           padding: paddingValue,
           borderWidth: variant === 'flat' ? 1 : 0,
           borderColor: colors.border,
+          // Tablet: ancho máximo centrado
+          ...(isTablet && {
+            maxWidth: CONTENT_MAX_W,
+            alignSelf: 'center' as const,
+            width: '100%',
+          }),
         },
         shadow,
         style,
@@ -70,8 +69,6 @@ export function Card({
     </View>
   );
 }
-
-// ── Divider ───────────────────────────────
 
 export function Divider({ style }: { style?: ViewStyle }) {
   const { colors } = useTheme();

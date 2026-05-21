@@ -1,4 +1,9 @@
 // src/components/FAB.tsx
+// ─────────────────────────────────────────
+// Botón flotante de acción único
+// Responsive: tamaño y posición adaptativos
+// ─────────────────────────────────────────
+
 import * as Haptics from 'expo-haptics';
 import { Plus } from 'lucide-react-native';
 import React, { useEffect } from 'react';
@@ -7,12 +12,11 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
-  withSequence,
-  withSpring,
-  withTiming,
+  withDelay, withSequence,
+  withSpring, withTiming,
 } from 'react-native-reanimated';
 
+import { useResponsive } from '../hooks/useResponsive';
 import { useTranslation } from '../i18n/useTranslation';
 import { COLORS, SHADOWS, SPACING } from '../theme';
 import { Text } from './ui/Text';
@@ -24,16 +28,26 @@ interface FABProps {
 
 export function FAB({ onPress, visible = true }: FABProps) {
   const { t } = useTranslation();
+  const { isTablet, contentPaddingH } = useResponsive();
+
+  // Tamaños adaptativos
+  const iconSize = isTablet ? 24 : 22;
+  const fontSize = isTablet ? 19 : 17;
+  const paddingH = isTablet ? 36 : 28;
+  const paddingV = isTablet ? 18 : 16;
+  const bottomOffset = SPACING.xl + 16;
+
   const scale = useSharedValue(0);
   const pressScale = useSharedValue(1);
 
+  // Entrada
   useEffect(() => {
     scale.value = visible
       ? withDelay(200, withSpring(1, { damping: 12, stiffness: 200 }))
       : withTiming(0, { duration: 180 });
   }, [visible]);
 
-  // Pulso suave de atención cada 6 s (si el usuario no ha interactuado)
+  // Pulso de atención
   useEffect(() => {
     const id = setInterval(() => {
       pressScale.value = withSequence(
@@ -57,16 +71,37 @@ export function FAB({ onPress, visible = true }: FABProps) {
   };
 
   return (
-    <Animated.View style={[styles.container, containerStyle]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { bottom: bottomOffset },
+        containerStyle,
+      ]}
+    >
       <TouchableOpacity
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={1}
-        style={[styles.button, SHADOWS.fab]}
+        style={[
+          styles.button,
+          {
+            paddingHorizontal: paddingH,
+            paddingVertical: paddingV,
+          },
+          SHADOWS.fab,
+        ]}
       >
-        <Plus size={22} color={COLORS.white} strokeWidth={2.8} />
-        <Text style={styles.label}>{t('home.add_expense')}</Text>
+        <Plus size={iconSize} color={COLORS.white} strokeWidth={2.8} />
+        <Text
+          style={{
+            fontSize,
+            fontFamily: 'Nunito_700Bold',
+            color: COLORS.white,
+          }}
+        >
+          {t('home.add_expense')}
+        </Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -75,7 +110,6 @@ export function FAB({ onPress, visible = true }: FABProps) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: SPACING.xl + 16,
     alignSelf: 'center',
     zIndex: 100,
   },
@@ -83,15 +117,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 28,
-    paddingVertical: 16,
     borderRadius: 100,
     backgroundColor: COLORS.primary,
     gap: SPACING.sm,
-  },
-  label: {
-    fontSize: 17,
-    fontFamily: 'Nunito_700Bold',
-    color: COLORS.white,
   },
 });

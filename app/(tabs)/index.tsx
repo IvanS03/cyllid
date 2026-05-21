@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useExpenseFilter } from '../../src/hooks/useExpenseFilter';
 import { useMonthBalance } from '../../src/hooks/useMonthBalance';
+import { useResponsive } from '../../src/hooks/useResponsive';
 import { useTranslation } from '../../src/i18n/useTranslation';
 import { ExpenseState, useExpenseStore } from '../../src/store/useExpenseStore';
 import { COLORS, SPACING } from '../../src/theme';
@@ -41,6 +42,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { contentPaddingH, isTablet } = useResponsive();
 
   const isLoading = useExpenseStore((s: ExpenseState) => s.isLoading);
   const initialize = useExpenseStore((s: ExpenseState) => s.initialize);
@@ -71,7 +73,11 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: insets.top + SPACING.md, paddingBottom: 130 },
+          {
+            paddingTop: insets.top + SPACING.md,
+            paddingBottom: 130,
+            paddingHorizontal: contentPaddingH,
+          },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={

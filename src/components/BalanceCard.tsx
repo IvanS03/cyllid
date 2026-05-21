@@ -18,7 +18,7 @@ import { formatCurrency } from '../utils/helpers';
 import { Text } from './ui/Text';
 
 interface BalanceCardProps {
-    balance: MonthBalance;
+    balance: MonthBalance & { totalConfirmed?: number; totalProjected?: number };
     onAddIncome: () => void;
 }
 
@@ -62,6 +62,7 @@ export function BalanceCard({ balance, onAddIncome }: BalanceCardProps) {
 
     const isPositive = balance.balance > 0;
     const isNegative = balance.balance < 0;
+    const hasProjected = (balance.totalProjected ?? 0) > 0;
 
     const balanceColor = isPositive
         ? COLORS.success
@@ -130,10 +131,20 @@ export function BalanceCard({ balance, onAddIncome }: BalanceCardProps) {
                     >
                         {isPositive ? '+' : ''}{formatCurrency(balance.balance, currency)}
                     </Text>
-                    <View style={[styles.badge, { backgroundColor: balanceColor + '18' }]}>
-                        <Text variant="caption" weight="bold" color={balanceColor}>
-                            {balanceLabel}
-                        </Text>
+                    <View style={{ gap: 4 }}>
+                        <View style={[styles.badge, { backgroundColor: balanceColor + '18' }]}>
+                            <Text variant="caption" weight="bold" color={balanceColor}>
+                                {balanceLabel}
+                            </Text>
+                        </View>
+                        {/* Badge de proyectado si hay recurrentes */}
+                        {hasProjected && (
+                            <View style={[styles.badge, { backgroundColor: COLORS.warning + '20' }]}>
+                                <Text variant="caption" weight="semibold" color={COLORS.warning}>
+                                    +{formatCurrency(balance.totalProjected ?? 0, currency)} proyectado
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 

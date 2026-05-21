@@ -4,25 +4,24 @@
 // Se activa automáticamente al abrir el form
 // ─────────────────────────────────────────
 
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
-  TextInput,
-  View,
   StyleSheet,
-  TextInputProps,
-  TouchableOpacity,
+  TextInput,
+  View
 } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useResponsive } from '../../hooks/useResponsive';
+import { AppState, useAppStore } from '../../store/useAppStore';
+import { COLORS, FONT_SIZE, RADIUS, SPACING } from '../../theme';
 import { useTheme } from '../../theme/useTheme';
-import { useAppStore } from '../../store/useAppStore';
-import { FONT_SIZE, FONT_WEIGHT, SPACING, RADIUS, COLORS } from '../../theme';
-import { Text } from './Text';
 import { formatAmount } from '../../utils/helpers';
+import { Text } from './Text';
 
 interface AmountInputProps {
   value: string;
@@ -40,7 +39,8 @@ export function AmountInput({
   placeholder = '0.00',
 }: AmountInputProps) {
   const { colors, isDark } = useTheme();
-  const { currency } = useAppStore();
+  const { currency } = useAppStore((s: AppState) => s);
+  const { isTablet, fs } = useResponsive();
   const inputRef = useRef<TextInput>(null);
   const scale = useSharedValue(1);
   const borderOpacity = useSharedValue(0);
@@ -103,7 +103,11 @@ export function AmountInput({
           <Text
             style={[
               styles.currency,
-              { color: value ? colors.primary : colors.textMuted },
+              {
+                color: value ? colors.primary : colors.textMuted,
+                fontSize: fs(FONT_SIZE.xxl),
+                lineHeight: fs(FONT_SIZE.display),
+              },
             ]}
             weight="bold"
           >
@@ -123,11 +127,15 @@ export function AmountInput({
             returnKeyType="done"
             maxLength={10}
             selectionColor={COLORS.primary}
+            maxFontSizeMultiplier={1.2}
             style={[
               styles.input,
               {
+                fontSize: fs(FONT_SIZE.display),
                 color: hasError ? COLORS.error : colors.textPrimary,
                 fontFamily: 'Nunito_800ExtraBold',
+                minWidth: isTablet ? 160 : 120,
+                maxWidth: isTablet ? 320 : 240,
               },
             ]}
           />

@@ -1,8 +1,7 @@
 // src/components/SpeedDial.tsx
 // ─────────────────────────────────────────
-// FAB expandible: al tocar muestra dos opciones
-//   💸 Agregar gasto   (púrpura)
-//   💰 Agregar ingreso (verde)
+// FAB expandible — Gasto (púrpura) + Ingreso (verde)
+// Responsive: posición y tamaño adaptativos en tablet
 // ─────────────────────────────────────────
 
 import * as Haptics from 'expo-haptics';
@@ -17,6 +16,7 @@ import Animated, {
     withSpring, withTiming,
 } from 'react-native-reanimated';
 
+import { useResponsive } from '../hooks/useResponsive';
 import { useTranslation } from '../i18n/useTranslation';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../theme';
 import { Text } from './ui/Text';
@@ -34,8 +34,10 @@ function ActionButton({
     label: string; color: string;
     icon: React.ReactNode; onPress: () => void; delay: number;
 }) {
+    const { isTablet } = useResponsive();
     const translateY = useSharedValue(40);
     const opacity = useSharedValue(0);
+    const btnSize = isTablet ? 56 : 48;
 
     useEffect(() => {
         translateY.value = withDelay(delay, withSpring(0, { damping: 14, stiffness: 200 }));
@@ -50,7 +52,7 @@ function ActionButton({
     return (
         <Animated.View style={[styles.actionRow, animStyle]}>
             {/* Label */}
-            <View style={[styles.label, { backgroundColor: 'rgba(0,0,0,0.65)' }]}>
+            <View style={[styles.labelPill, { backgroundColor: 'rgba(0,0,0,0.65)' }]}>
                 <Text variant="caption" weight="bold" color="#FFF">{label}</Text>
             </View>
 
@@ -58,7 +60,13 @@ function ActionButton({
             <TouchableOpacity
                 onPress={onPress}
                 activeOpacity={0.85}
-                style={[styles.actionBtn, { backgroundColor: color }, SHADOWS.md]}
+                style={[
+                    {
+                        width: btnSize, height: btnSize, borderRadius: btnSize / 2,
+                        backgroundColor: color, alignItems: 'center', justifyContent: 'center'
+                    },
+                    SHADOWS.md,
+                ]}
             >
                 {icon}
             </TouchableOpacity>
@@ -70,32 +78,39 @@ function ActionButton({
 
 export function SpeedDial({ onAddExpense, onAddIncome }: SpeedDialProps) {
     const { t } = useTranslation();
+    const {
+        isTablet, isLargeTablet,
+        contentPaddingH, W,
+    } = useResponsive();
+
     const [open, setOpen] = useState(false);
+
+    // Tamaños adaptativos
+    const mainSize = isTablet ? 68 : 60;
+    const iconSize = isTablet ? 28 : 26;
+    const iconSizeSm = isTablet ? 24 : 22;
+
+    // Posición: en tablet, el FAB se alinea con el borde derecho del contenido centrado
+    const rightOffset = contentPaddingH + SPACING.lg;
+    const bottomOffset = SPACING.xl + 16;
 
     const mainScale = useSharedValue(1);
     const mainRotate = useSharedValue(0);
-    const backdropOpacity = useSharedValue(0);
+    const backdropOpac = useSharedValue(0);
 
     const toggleOpen = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         const next = !open;
         setOpen(next);
         mainRotate.value = withSpring(next ? 1 : 0, { damping: 12, stiffness: 200 });
-        backdropOpacity.value = withTiming(next ? 1 : 0, { duration: 200 });
+        backdropOpac.value = withTiming(next ? 1 : 0, { duration: 200 });
     };
 
-    const handleExpense = () => {
+    const close = (cb?: () => void) => {
         setOpen(false);
         mainRotate.value = withSpring(0, { damping: 12, stiffness: 200 });
-        backdropOpacity.value = withTiming(0, { duration: 150 });
-        setTimeout(() => onAddExpense(), 100);
-    };
-
-    const handleIncome = () => {
-        setOpen(false);
-        mainRotate.value = withSpring(0, { damping: 12, stiffness: 200 });
-        backdropOpacity.value = withTiming(0, { duration: 150 });
-        setTimeout(() => onAddIncome(), 100);
+        backdropOpac.value = withTiming(0, { duration: 150 });
+        if (cb) setTimeout(cb, 100);
     };
 
     const mainBtnStyle = useAnimatedStyle(() => ({
@@ -106,7 +121,7 @@ export function SpeedDial({ onAddExpense, onAddIncome }: SpeedDialProps) {
     }));
 
     const backdropStyle = useAnimatedStyle(() => ({
-        opacity: backdropOpacity.value,
+        opacity: backdropOpac.value,
     }));
 
     const handlePressIn = () => { mainScale.value = withSpring(0.92, { damping: 10, stiffness: 320 }); };
@@ -114,33 +129,34 @@ export function SpeedDial({ onAddExpense, onAddIncome }: SpeedDialProps) {
 
     return (
         <>
-            {/* Backdrop para cerrar al tocar fuera */}
+            {/* Backdrop */}
             {open && (
                 <Animated.View
                     entering={FadeIn.duration(150)}
                     exiting={FadeOut.duration(150)}
                     style={[styles.backdrop, backdropStyle]}
                 >
-                    <Pressable style={StyleSheet.absoluteFill} onPress={toggleOpen} />
+                    <Pressable style={StyleSheet.absoluteFill} onPress={() => close()} />
                 </Animated.View>
             )}
 
-            <View style={styles.container}>
+            <View style={[styles.container, { bottom: bottomOffset, right: rightOffset }]}>
+
                 {/* Opciones expandidas */}
                 {open && (
                     <View style={styles.actions}>
                         <ActionButton
                             label={t('income.add_income')}
                             color={COLORS.success}
-                            icon={<ArrowUpCircle size={22} color="#FFF" strokeWidth={2} />}
-                            onPress={handleIncome}
+                            icon={<ArrowUpCircle size={iconSizeSm} color="#FFF" strokeWidth={2} />}
+                            onPress={() => close(onAddIncome)}
                             delay={0}
                         />
                         <ActionButton
                             label={t('home.add_expense')}
                             color={COLORS.primary}
-                            icon={<ArrowDownCircle size={22} color="#FFF" strokeWidth={2} />}
-                            onPress={handleExpense}
+                            icon={<ArrowDownCircle size={iconSizeSm} color="#FFF" strokeWidth={2} />}
+                            onPress={() => close(onAddExpense)}
                             delay={60}
                         />
                     </View>
@@ -154,14 +170,18 @@ export function SpeedDial({ onAddExpense, onAddIncome }: SpeedDialProps) {
                         onPressOut={handlePressOut}
                         activeOpacity={1}
                         style={[
-                            styles.mainBtn,
-                            { backgroundColor: open ? '#374151' : COLORS.primary },
+                            {
+                                width: mainSize, height: mainSize,
+                                borderRadius: mainSize / 2,
+                                backgroundColor: open ? '#374151' : COLORS.primary,
+                                alignItems: 'center', justifyContent: 'center',
+                            },
                             SHADOWS.fab,
                         ]}
                     >
                         {open
-                            ? <X size={26} color="#FFF" strokeWidth={2.5} />
-                            : <Plus size={26} color="#FFF" strokeWidth={2.8} />
+                            ? <X size={iconSize} color="#FFF" strokeWidth={2.5} />
+                            : <Plus size={iconSize} color="#FFF" strokeWidth={2.8} />
                         }
                     </TouchableOpacity>
                 </Animated.View>
@@ -178,8 +198,6 @@ const styles = StyleSheet.create({
     },
     container: {
         position: 'absolute',
-        bottom: SPACING.xl + 16,
-        right: SPACING.lg,
         alignItems: 'flex-end',
         zIndex: 100,
         gap: SPACING.md,
@@ -193,23 +211,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: SPACING.sm,
     },
-    label: {
+    labelPill: {
         paddingHorizontal: SPACING.md,
         paddingVertical: 6,
         borderRadius: RADIUS.md,
-    },
-    actionBtn: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    mainBtn: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
 });

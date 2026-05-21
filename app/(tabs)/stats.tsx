@@ -1,5 +1,5 @@
 // app/(tabs)/stats.tsx — Estadísticas: Gastos / Ingresos / Balance
-import { format, subMonths } from 'date-fns';
+import { format, parseISO, subMonths } from 'date-fns';
 import { enUS, es as esLocale } from 'date-fns/locale';
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
@@ -15,13 +15,14 @@ import { IncomeItem } from '../../src/components/IncomeItem';
 import { Card } from '../../src/components/ui/Card';
 import { Text } from '../../src/components/ui/Text';
 import { useMonthBalance } from '../../src/hooks/useMonthBalance';
+import { useResponsive } from '../../src/hooks/useResponsive';
 import { useTranslation } from '../../src/i18n/useTranslation';
 import { AppState, useAppStore } from '../../src/store/useAppStore';
 import { ExpenseState, useExpenseStore } from '../../src/store/useExpenseStore';
 import { IncomeState, useIncomeStore } from '../../src/store/useIncomeStore';
 import { CATEGORY_CONFIG, CategoryKey, COLORS, INCOME_SOURCE_CONFIG, IncomeSourceKey, RADIUS, SHADOWS, SPACING } from '../../src/theme';
 import { useTheme } from '../../src/theme/useTheme';
-import { Income, MonthSummary } from '../../src/types';
+import { Income } from '../../src/types';
 import { formatCurrency } from '../../src/utils/helpers';
 
 const W = Dimensions.get('window').width;
@@ -97,8 +98,10 @@ function HorizBar({ label, amount, maxAmount, total, currency, color, index, t, 
 function TrendChart({ selectedMonth, currency }: { selectedMonth: string; currency: string }) {
   const { colors } = useTheme();
   const { t, language } = useTranslation();
-  const getMonthSummary = useExpenseStore((s: ExpenseState) => s.getMonthSummary);
-  const getMonthlyTotal = useIncomeStore((s: IncomeState) => s.getMonthlyTotal);
+
+  // ✅ Suscribir a DATOS crudos — garantiza re-render al agregar ingresos/gastos
+  const expenses = useExpenseStore((s: ExpenseState) => s.expenses);
+  const incomes = useIncomeStore((s: IncomeState) => s.incomes);
 
   const months = useMemo(() => {
     return Array.from({ length: 6 }, (_, i) => {
@@ -107,12 +110,20 @@ function TrendChart({ selectedMonth, currency }: { selectedMonth: string; curren
     });
   }, [selectedMonth]);
 
-  const data = useMemo(() => months.map((m) => ({
-    month: m,
-    income: getMonthlyTotal(m),
-    expenses: getMonthSummary(m).total,
-    label: format(new Date(m + '-15'), 'MMM', { locale: language === 'es' ? esLocale : enUS }),
-  })), [months, getMonthlyTotal, getMonthSummary]);
+  const data = useMemo(() => months.map((m) => {
+    const monthIncome = incomes
+      .filter((i) => format(parseISO(i.date), 'yyyy-MM') === m)
+      .reduce((sum, i) => sum + i.amount, 0);
+    const monthExpenses = expenses
+      .filter((e) => format(parseISO(e.date), 'yyyy-MM') === m)
+      .reduce((sum, e) => sum + e.amount, 0);
+    return {
+      month: m,
+      income: monthIncome,
+      expenses: monthExpenses,
+      label: format(new Date(m + '-15'), 'MMM', { locale: language === 'es' ? esLocale : enUS }),
+    };
+  }), [months, incomes, expenses, language]); // ✅ deps son datos, no funciones
 
   const maxVal = Math.max(...data.flatMap((d) => [d.income, d.expenses]), 1);
   const BAR_H = 100;
@@ -180,12 +191,10 @@ export default function StatsScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { currency } = useAppStore((s: AppState) => s);
+  const { contentPaddingH, metricCols, isTablet } = useResponsive();
 
-  const getMonthSummary = useExpenseStore((s: ExpenseState) => s.getMonthSummary);
+  // ✅ Suscribir SOLO a datos crudos — funciones del store no disparan re-renders
   const expenses = useExpenseStore((s: ExpenseState) => s.expenses);
-  const getRecentIncome = useIncomeStore((s: IncomeState) => s.getRecentIncomes);
-  const getBySource = useIncomeStore((s: IncomeState) => s.getBySource);
-  const getIncByMonth = useIncomeStore((s: IncomeState) => s.getIncomesByMonth);
   const incomes = useIncomeStore((s: IncomeState) => s.incomes);
 
   const currentMonth = format(new Date(), 'yyyy-MM');
@@ -193,7 +202,19 @@ export default function StatsScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('expenses');
 
   const balance = useMonthBalance(selectedMonth);
-  const summary: MonthSummary = useMemo(() => getMonthSummary(selectedMonth), [selectedMonth, expenses]);
+
+  // ── Gastos del mes ──
+  const monthExpenses = useMemo(() =>
+    expenses.filter((e) => format(parseISO(e.date), 'yyyy-MM') === selectedMonth),
+    [expenses, selectedMonth]);
+
+  const summary = useMemo(() => {
+    const byCategory = {} as Record<CategoryKey, number>;
+    (Object.keys(CATEGORY_CONFIG) as CategoryKey[]).forEach((k) => { byCategory[k] = 0; });
+    let total = 0;
+    for (const e of monthExpenses) { total += e.amount; byCategory[e.category as CategoryKey] += e.amount; }
+    return { total: Number(total.toFixed(2)), byCategory, count: monthExpenses.length, month: selectedMonth };
+  }, [monthExpenses, selectedMonth]);
 
   const goToPrev = () => setSelectedMonth(format(subMonths(new Date(selectedMonth + '-15'), 1), 'yyyy-MM'));
   const goToNext = () => {
@@ -201,7 +222,7 @@ export default function StatsScreen() {
     if (next <= currentMonth) setSelectedMonth(next);
   };
 
-  // Gastos
+  // Gastos derivados
   const activeCats = useMemo(() =>
     (Object.entries(summary.byCategory) as [CategoryKey, number][])
       .filter(([, v]) => v > 0).sort(([, a], [, b]) => b - a),
@@ -211,13 +232,21 @@ export default function StatsScreen() {
   const daysInMonth = new Date(parseInt(selectedMonth.split('-')[0]), parseInt(selectedMonth.split('-')[1]), 0).getDate();
   const dailyAvg = summary.count > 0 ? summary.total / daysInMonth : 0;
   const maxExpense = useMemo(() =>
-    expenses.filter((e) => format(new Date(e.date), 'yyyy-MM') === selectedMonth)
-      .reduce((m: number, e) => e.amount > m ? e.amount : m, 0),
-    [selectedMonth, expenses]);
+    monthExpenses.reduce((m: number, e) => e.amount > m ? e.amount : m, 0),
+    [monthExpenses]);
 
-  // Ingresos
-  const monthIncomes = useMemo(() => getIncByMonth(selectedMonth), [selectedMonth, incomes]);
-  const bySource = useMemo(() => getBySource(selectedMonth), [selectedMonth, incomes]);
+  // ── Ingresos del mes (reactivo por raw array) ──
+  const monthIncomes = useMemo(() =>
+    incomes.filter((i) => format(parseISO(i.date), 'yyyy-MM') === selectedMonth),
+    [incomes, selectedMonth]);
+
+  const bySource = useMemo(() => {
+    const result = {} as Record<IncomeSourceKey, number>;
+    (Object.keys(INCOME_SOURCE_CONFIG) as IncomeSourceKey[]).forEach((k) => { result[k] = 0; });
+    monthIncomes.forEach((i) => { result[i.source as IncomeSourceKey] += i.amount; });
+    return result;
+  }, [monthIncomes]);
+
   const activeSources = useMemo(() =>
     (Object.entries(bySource) as [IncomeSourceKey, number][])
       .filter(([, v]) => v > 0).sort(([, a], [, b]) => b - a),
@@ -234,7 +263,7 @@ export default function StatsScreen() {
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={[styles.scroll,
-      { paddingTop: insets.top + SPACING.md, paddingBottom: 100 }]}
+      { paddingTop: insets.top + SPACING.md, paddingBottom: 100, paddingHorizontal: contentPaddingH }]}
         showsVerticalScrollIndicator={false}>
 
         {/* Título */}

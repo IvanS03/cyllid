@@ -4,6 +4,8 @@
 // Color principal: #7119c3
 // ─────────────────────────────────────────
 
+import { fs, ms } from '../utils/responsive';
+
 export const COLORS = {
   // Brand
   primary: '#7119c3',
@@ -151,32 +153,32 @@ export const INCOME_SOURCE_CONFIG = {
 export type IncomeSourceKey = keyof typeof INCOME_SOURCE_CONFIG;
 
 export const SPACING = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
+  xs: ms(4),
+  sm: ms(8),
+  md: ms(16),
+  lg: ms(24),
+  xl: ms(32),
+  xxl: ms(48),
+  xxxl: ms(64),
 };
 
 export const RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  sm: ms(8, 0.3),
+  md: ms(12, 0.3),
+  lg: ms(16, 0.3),
+  xl: ms(24, 0.3),
   full: 9999,
 };
 
 export const FONT_SIZE = {
-  xs: 11,
-  sm: 13,
-  md: 15,
-  lg: 17,
-  xl: 20,
-  xxl: 26,
-  xxxl: 36,
-  display: 48,
+  xs: fs(11),
+  sm: fs(13),
+  md: fs(15),
+  lg: fs(17),
+  xl: fs(20),
+  xxl: fs(26),
+  xxxl: fs(36),
+  display: fs(48),
 };
 
 export const FONT_WEIGHT = {
