@@ -42,6 +42,9 @@ const en: TranslationKeys = {
     no_expenses_sub: 'Tap the button to log your first expense',
     add_expense: 'Add expense',
     see_all: 'See all',
+    recent_transactions: 'Recent transactions',
+    no_transactions: 'No transactions yet',
+    no_transactions_sub: 'Add an expense or income to get started',
   },
 
   addExpense: {

@@ -40,6 +40,9 @@ const es = {
     no_expenses_sub: 'Toca el botón para registrar tu primer gasto',
     add_expense: 'Agregar gasto',
     see_all: 'Ver todos',
+    recent_transactions: 'Transacciones recientes',
+    no_transactions: 'Sin transacciones aún',
+    no_transactions_sub: 'Agrega un gasto o ingreso para comenzar',
   },
 
   addExpense: {
