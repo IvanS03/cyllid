@@ -19,7 +19,7 @@ import { Text } from './ui/Text';
 
 interface BalanceCardProps {
     balance: MonthBalance & { totalConfirmed?: number; totalProjected?: number };
-    onAddIncome: () => void;
+    onAddIncome?: () => void; // opcional — si no se pasa, no se muestra el botón
 }
 
 // ── Columna de métrica ────────────────────
@@ -107,17 +107,19 @@ export function BalanceCard({ balance, onAddIncome }: BalanceCardProps) {
                         </Text>
                     </View>
 
-                    {/* Botón agregar ingreso */}
-                    <TouchableOpacity
-                        onPress={onAddIncome}
-                        activeOpacity={0.8}
-                        style={[styles.addIncomeBtn, { backgroundColor: COLORS.success + '18' }]}
-                    >
-                        <Plus size={13} color={COLORS.success} strokeWidth={2.5} />
-                        <Text variant="caption" weight="bold" color={COLORS.success}>
-                            {t('income.add_income')}
-                        </Text>
-                    </TouchableOpacity>
+                    {/* Botón agregar ingreso — solo si se pasa el handler */}
+                    {onAddIncome && (
+                        <TouchableOpacity
+                            onPress={onAddIncome}
+                            activeOpacity={0.8}
+                            style={[styles.addIncomeBtn, { backgroundColor: COLORS.success + '18' }]}
+                        >
+                            <Plus size={13} color={COLORS.success} strokeWidth={2.5} />
+                            <Text variant="caption" weight="bold" color={COLORS.success}>
+                                {t('income.add_income')}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* ── Balance principal ── */}
